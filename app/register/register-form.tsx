@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
@@ -16,21 +16,6 @@ interface FormData {
 
 export default function RegisterForm() {
   const router = useRouter();
-
-  // Remove animated cursor SVG elements
-  useEffect(() => {
-    const removeCursorSVG = () => {
-      const svgs = document.querySelectorAll('svg[style*="position: absolute"]');
-      svgs.forEach(svg => svg.remove());
-    };
-
-    // Remove on initial load
-    removeCursorSVG();
-
-    // Check periodically in case they're re-added
-    const interval = setInterval(removeCursorSVG, 100);
-    return () => clearInterval(interval);
-  }, []);
 
   const [formData, setFormData] = useState<FormData>({
     username: '',
