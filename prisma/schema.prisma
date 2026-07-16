@@ -1,0 +1,84 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../.prisma/client"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// Товари
+model Product {
+  id          Int      @id @default(autoincrement())
+  name        String
+  price       Int
+  category    String
+  stock       Int
+  emoji       String
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  cartItems   CartItem[]
+  wishlistItems WishlistItem[]
+}
+
+// Користувачі
+model User {
+  id        Int     @id @default(autoincrement())
+  email     String  @unique
+  username  String  @unique
+  password  String
+  firstName String?
+  lastName  String?
+  createdAt DateTime @default(now())
+
+  orders    Order[]
+  cartItems CartItem[]
+}
+
+// Замовлення
+model Order {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  status    String   @default("pending")
+  total     Int
+  createdAt DateTime @default(now())
+
+  orderItems OrderItem[]
+}
+
+// Товари в замовленні
+model OrderItem {
+  id        Int @id @default(autoincrement())
+  orderId   Int
+  order     Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  productId Int
+  quantity  Int
+  price     Int
+}
+
+// Кошик
+model CartItem {
+  id        Int @id @default(autoincrement())
+  userId    Int
+  user      User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  productId Int
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  quantity  Int
+
+  @@unique([userId, productId])
+}
+
+// Улюблені товари
+model WishlistItem {
+  id        Int @id @default(autoincrement())
+  userId    Int
+  productId Int
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@unique([userId, productId])
+}
