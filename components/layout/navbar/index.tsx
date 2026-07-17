@@ -64,7 +64,8 @@ export async function Navbar() {
                   <Link
                     href={item.path}
                     prefetch={true}
-                    className="text-neutral-500 underline-offset-4 hover:text-black hover:underline dark:text-neutral-400 dark:hover:text-neutral-300"
+                    style={{ color: 'rgb(175, 62, 143)' }}
+                    className="font-semibold hover:opacity-80 transition"
                   >
                     {item.title}
                   </Link>
@@ -82,26 +83,30 @@ export async function Navbar() {
           <DarkModeToggle />
           <Link
             href="/register"
-            className="px-3 py-2 rounded-lg text-purple-600 hover:bg-purple-50 font-medium text-xs md:text-sm transition"
+            style={{ color: 'rgb(175, 62, 143)' }}
+            className="font-semibold hover:opacity-80 transition text-xs md:text-sm"
           >
-            👤 Реєстрація
+            Реєстрація
           </Link>
           <Link
             href="/admin/orders"
-            className="px-3 py-2 rounded-lg text-blue-600 hover:bg-blue-50 font-medium text-xs md:text-sm transition"
+            style={{ color: 'rgb(175, 62, 143)' }}
+            className="font-semibold hover:opacity-80 transition text-xs md:text-sm"
           >
-            📋 Замовлення
+            Замовлення
           </Link>
           <Link
             href="/wishlist"
-            className="px-3 py-2 rounded-lg text-red-600 hover:bg-red-50 font-medium text-xs md:text-sm transition flex items-center gap-1"
+            style={{ color: 'rgb(175, 62, 143)' }}
+            className="font-semibold hover:opacity-80 transition text-xs md:text-sm flex items-center gap-1"
           >
             ❤️
             <span className="hidden md:inline">Обране</span>
           </Link>
           <Link
             href="/cart"
-            className="px-3 py-2 rounded-lg text-orange-600 hover:bg-orange-50 font-medium text-xs md:text-sm transition flex items-center gap-1"
+            style={{ color: 'rgb(175, 62, 143)' }}
+            className="font-semibold hover:opacity-80 transition text-xs md:text-sm flex items-center gap-1"
           >
             🛒
             <span className="hidden md:inline">Кошик</span>
