@@ -1,10 +1,23 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { cookies } from 'next/headers';
 import { prisma } from 'lib/prisma';
+import { ADMIN_COOKIE_NAME, verifyAdminSession } from 'lib/admin-auth';
+
+async function requireAdmin(): Promise<boolean> {
+  const secret = process.env.ADMIN_SESSION_SECRET;
+  if (!secret) return false;
+  const token = (await cookies()).get(ADMIN_COOKIE_NAME)?.value;
+  return verifyAdminSession(token, secret);
+}
 
 export async function PATCH(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  if (!(await requireAdmin())) {
+    return NextResponse.json({ error: 'Не авторизовано' }, { status: 401 });
+  }
+
   try {
     const { id } = await params;
     const body = await request.json();
@@ -30,6 +43,10 @@ export async function DELETE(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  if (!(await requireAdmin())) {
+    return NextResponse.json({ error: 'Не авторизовано' }, { status: 401 });
+  }
+
   try {
     const { id } = await params;
     await prisma.user.delete({ where: { id: Number(id) } });

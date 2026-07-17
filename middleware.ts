@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { ADMIN_COOKIE_NAME, verifyAdminSession } from 'lib/admin-auth';
 
 export const config = {
-  matcher: ['/admin/:path*', '/api/admin/users/:path*']
+  matcher: ['/admin/:path*']
 };
 
 export async function middleware(request: NextRequest) {
@@ -15,9 +15,6 @@ export async function middleware(request: NextRequest) {
   const isValid = secret ? await verifyAdminSession(token, secret) : false;
 
   if (!isValid) {
-    if (request.nextUrl.pathname.startsWith('/api/')) {
-      return NextResponse.json({ error: 'Не авторизовано' }, { status: 401 });
-    }
     const loginUrl = new URL('/admin/login', request.url);
     loginUrl.searchParams.set('from', request.nextUrl.pathname);
     return NextResponse.redirect(loginUrl);
