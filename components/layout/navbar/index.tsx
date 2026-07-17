@@ -98,18 +98,16 @@ export async function Navbar() {
           <Link
             href="/wishlist"
             style={{ color: 'rgb(175, 62, 143)' }}
-            className="font-semibold hover:opacity-80 transition text-xs md:text-sm flex items-center gap-1"
+            className="font-semibold hover:opacity-80 transition text-xs md:text-sm"
           >
-            ❤️
-            <span className="hidden md:inline">Обране</span>
+            Обране
           </Link>
           <Link
             href="/cart"
             style={{ color: 'rgb(175, 62, 143)' }}
-            className="font-semibold hover:opacity-80 transition text-xs md:text-sm flex items-center gap-1"
+            className="font-semibold hover:opacity-80 transition text-xs md:text-sm"
           >
-            🛒
-            <span className="hidden md:inline">Кошик</span>
+            Кошик
           </Link>
           <CartModal />
         </div>
