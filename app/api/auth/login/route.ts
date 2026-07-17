@@ -16,6 +16,10 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Email або пароль невірні' }, { status: 401 });
     }
 
+    if (user.isBlocked) {
+      return NextResponse.json({ error: 'Цей аккаунт заблоковано' }, { status: 403 });
+    }
+
     return NextResponse.json({
       success: true,
       user: {

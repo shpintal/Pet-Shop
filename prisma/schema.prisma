@@ -32,6 +32,7 @@ model User {
   password  String
   firstName String?
   lastName  String?
+  isBlocked Boolean @default(false)
   createdAt DateTime @default(now())
 
   orders    Order[]

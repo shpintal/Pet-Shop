@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import * as fs from 'fs';
 import * as path from 'path';
+import { prisma } from 'lib/prisma';
 import AdminLogoutButton from './logout-button';
 
 interface Order {
@@ -35,6 +36,7 @@ export const metadata = {
 
 export default async function AdminPage() {
   const stats = await getOrderStats();
+  const userCount = await prisma.user.count();
 
   const menuItems = [
     {
@@ -58,7 +60,7 @@ export default async function AdminPage() {
       description: 'Управління аккаунтами користувачів',
       icon: '👥',
       href: '/admin/users',
-      count: '24',
+      count: userCount,
       color: 'from-green-400 to-green-600'
     },
     {
@@ -112,7 +114,7 @@ export default async function AdminPage() {
             {/* Users */}
             <div style={{ borderLeftColor: 'rgb(175, 62, 143)' }} className="bg-white rounded-lg shadow-lg p-8 border-l-4">
               <div style={{ color: 'rgb(119, 119, 119)' }} className="text-sm mb-2">Користувачі</div>
-              <div style={{ color: 'rgb(175, 62, 143)' }} className="text-3xl font-bold">24</div>
+              <div style={{ color: 'rgb(175, 62, 143)' }} className="text-3xl font-bold">{userCount}</div>
               <div style={{ color: 'rgb(119, 119, 119)' }} className="text-xs mt-2">👥 Зареєстровано</div>
             </div>
           </div>
