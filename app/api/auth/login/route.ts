@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import bcrypt from 'bcryptjs';
 import { prisma } from 'lib/prisma';
+import { USER_COOKIE_NAME, signUserSession } from 'lib/user-auth';
 
 export async function POST(request: NextRequest) {
   try {
@@ -20,15 +21,30 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Цей аккаунт заблоковано' }, { status: 403 });
     }
 
-    return NextResponse.json({
+    const response = NextResponse.json({
       success: true,
       user: {
         email: user.email,
         username: user.username,
         firstName: user.firstName,
         lastName: user.lastName,
+        role: user.role,
       },
     });
+
+    const sessionSecret = process.env.ADMIN_SESSION_SECRET;
+    if (sessionSecret) {
+      const token = await signUserSession(sessionSecret, user.id, user.role);
+      response.cookies.set(USER_COOKIE_NAME, token, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'lax',
+        path: '/',
+        maxAge: 60 * 60 * 24 * 7,
+      });
+    }
+
+    return response;
   } catch (error) {
     console.error('Error during login:', error);
     return NextResponse.json({ error: 'Помилка при вході' }, { status: 500 });

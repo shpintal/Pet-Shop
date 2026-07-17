@@ -1,5 +1,6 @@
 import * as fs from 'fs';
 import * as path from 'path';
+import Link from 'next/link';
 import { prisma } from 'lib/prisma';
 import UsersTable from './users-table';
 
@@ -42,6 +43,7 @@ export default async function UsersPage() {
     username: user.username,
     firstName: user.firstName,
     lastName: user.lastName,
+    role: user.role,
     isBlocked: user.isBlocked,
     createdAt: user.createdAt.toISOString(),
     orders: orderCounts[user.email.toLowerCase()] || 0
@@ -58,7 +60,13 @@ export default async function UsersPage() {
             </h1>
             <p style={{ fontSize: '18px', color: 'rgba(255,255,255,0.9)' }}>Управління аккаунтами користувачів</p>
           </div>
-          <div className="text-3xl">👤 {usersWithOrders.length}</div>
+          <Link
+            href="/admin/users/add"
+            style={{ backgroundColor: 'white', color: 'rgb(175, 62, 143)' }}
+            className="px-6 py-3 rounded-lg font-bold hover:shadow-lg transition inline-block"
+          >
+            ➕ Створити користувача
+          </Link>
         </div>
       </section>
 

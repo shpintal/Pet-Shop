@@ -64,8 +64,9 @@ export default function LoginForm() {
       localStorage.setItem('currentUser', JSON.stringify(data.user));
 
       setSuccess(true);
+      const destination = data.user.role === 'ADMIN' || data.user.role === 'SELLER' ? '/admin' : '/';
       setTimeout(() => {
-        router.push('/');
+        router.push(destination);
       }, 1500);
     } catch (err) {
       setError('Помилка при вході');

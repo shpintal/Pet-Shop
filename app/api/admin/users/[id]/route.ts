@@ -2,12 +2,20 @@ import { NextRequest, NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
 import { prisma } from 'lib/prisma';
 import { ADMIN_COOKIE_NAME, verifyAdminSession } from 'lib/admin-auth';
+import { USER_COOKIE_NAME, verifyUserSession } from 'lib/user-auth';
 
 async function requireAdmin(): Promise<boolean> {
   const secret = process.env.ADMIN_SESSION_SECRET;
   if (!secret) return false;
-  const token = (await cookies()).get(ADMIN_COOKIE_NAME)?.value;
-  return verifyAdminSession(token, secret);
+
+  const jar = await cookies();
+
+  const adminToken = jar.get(ADMIN_COOKIE_NAME)?.value;
+  if (await verifyAdminSession(adminToken, secret)) return true;
+
+  const userToken = jar.get(USER_COOKIE_NAME)?.value;
+  const userSession = await verifyUserSession(userToken, secret);
+  return userSession?.role === 'ADMIN';
 }
 
 export async function PATCH(

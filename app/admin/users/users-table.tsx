@@ -3,12 +3,15 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 
+type Role = 'CUSTOMER' | 'SELLER' | 'ADMIN';
+
 interface User {
   id: number;
   email: string;
   username: string;
   firstName: string | null;
   lastName: string | null;
+  role: Role;
   isBlocked: boolean;
   createdAt: string;
   orders: number;
@@ -17,6 +20,18 @@ interface User {
 interface UsersTableProps {
   users: User[];
 }
+
+const roleLabels: Record<Role, string> = {
+  CUSTOMER: 'Клієнт',
+  SELLER: 'Продавець',
+  ADMIN: 'Адміністратор'
+};
+
+const roleColors: Record<Role, { bg: string; text: string }> = {
+  CUSTOMER: { bg: 'rgb(240, 240, 240)', text: 'rgb(119, 119, 119)' },
+  SELLER: { bg: 'rgb(220, 235, 255)', text: 'rgb(40, 100, 180)' },
+  ADMIN: { bg: 'rgb(240, 220, 235)', text: 'rgb(175, 62, 143)' }
+};
 
 export default function UsersTable({ users }: UsersTableProps) {
   const router = useRouter();
@@ -63,6 +78,7 @@ export default function UsersTable({ users }: UsersTableProps) {
             <tr>
               <th className="px-6 py-4 text-left font-semibold">Користувач</th>
               <th className="px-6 py-4 text-left font-semibold">Email</th>
+              <th className="px-6 py-4 text-left font-semibold">Роль</th>
               <th className="px-6 py-4 text-left font-semibold">Зареєстрований</th>
               <th className="px-6 py-4 text-left font-semibold">Замовлень</th>
               <th className="px-6 py-4 text-left font-semibold">Статус</th>
@@ -88,6 +104,14 @@ export default function UsersTable({ users }: UsersTableProps) {
                 </td>
                 <td style={{ color: 'rgb(119, 119, 119)' }} className="px-6 py-4">
                   {user.email}
+                </td>
+                <td className="px-6 py-4">
+                  <span
+                    style={{ backgroundColor: roleColors[user.role].bg, color: roleColors[user.role].text }}
+                    className="px-3 py-1 rounded-full text-sm font-semibold"
+                  >
+                    {roleLabels[user.role]}
+                  </span>
                 </td>
                 <td style={{ color: 'rgb(119, 119, 119)' }} className="px-6 py-4">
                   {new Date(user.createdAt).toLocaleDateString('uk-UA')}
@@ -191,6 +215,12 @@ export default function UsersTable({ users }: UsersTableProps) {
                 <span style={{ color: 'rgb(150, 150, 150)' }}>Email</span>
                 <span style={{ color: 'rgb(119, 119, 119)' }} className="font-semibold">
                   {viewUser.email}
+                </span>
+              </div>
+              <div className="flex justify-between">
+                <span style={{ color: 'rgb(150, 150, 150)' }}>Роль</span>
+                <span style={{ color: roleColors[viewUser.role].text }} className="font-semibold">
+                  {roleLabels[viewUser.role]}
                 </span>
               </div>
               <div className="flex justify-between">

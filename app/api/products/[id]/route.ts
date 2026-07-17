@@ -1,5 +1,22 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { cookies } from 'next/headers';
 import { prisma } from 'lib/prisma';
+import { ADMIN_COOKIE_NAME, verifyAdminSession } from 'lib/admin-auth';
+import { USER_COOKIE_NAME, verifyUserSession } from 'lib/user-auth';
+
+async function requireProductManager(): Promise<boolean> {
+  const secret = process.env.ADMIN_SESSION_SECRET;
+  if (!secret) return false;
+
+  const jar = await cookies();
+
+  const adminToken = jar.get(ADMIN_COOKIE_NAME)?.value;
+  if (await verifyAdminSession(adminToken, secret)) return true;
+
+  const userToken = jar.get(USER_COOKIE_NAME)?.value;
+  const userSession = await verifyUserSession(userToken, secret);
+  return userSession?.role === 'ADMIN' || userSession?.role === 'SELLER';
+}
 
 export async function GET(
   request: NextRequest,
@@ -19,6 +36,10 @@ export async function PUT(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  if (!(await requireProductManager())) {
+    return NextResponse.json({ error: 'Не авторизовано' }, { status: 401 });
+  }
+
   try {
     const { id } = await params;
     const body = await request.json();
@@ -59,6 +80,10 @@ export async function DELETE(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  if (!(await requireProductManager())) {
+    return NextResponse.json({ error: 'Не авторизовано' }, { status: 401 });
+  }
+
   try {
     const { id } = await params;
     await prisma.product.delete({ where: { id: Number(id) } });

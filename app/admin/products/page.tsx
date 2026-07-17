@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { prisma } from 'lib/prisma';
 import ProductsTable from './products-table';
+import SellerLogoutButton from './logout-button';
 
 export const metadata = {
   title: 'Товари | Pet Shop Admin',
@@ -19,13 +20,16 @@ export default async function ProductsPage() {
             <h1 style={{ fontFamily: 'Poppins, sans-serif', fontSize: '40px', fontWeight: 700 }} className="mb-2">🛍️ Товари</h1>
             <p style={{ fontSize: '18px', color: 'rgba(255,255,255,0.9)' }}>Управління каталогом товарів</p>
           </div>
-          <Link
-            href="/admin/products/add"
-            style={{ backgroundColor: 'white', color: 'rgb(175, 62, 143)' }}
-            className="px-6 py-3 rounded-lg font-bold hover:shadow-lg transition inline-block"
-          >
-            ➕ Додати товар
-          </Link>
+          <div className="flex gap-3 items-center">
+            <Link
+              href="/admin/products/add"
+              style={{ backgroundColor: 'white', color: 'rgb(175, 62, 143)' }}
+              className="px-6 py-3 rounded-lg font-bold hover:shadow-lg transition inline-block"
+            >
+              ➕ Додати товар
+            </Link>
+            <SellerLogoutButton />
+          </div>
         </div>
       </section>
 
