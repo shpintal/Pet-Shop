@@ -1,5 +1,4 @@
 import CartModal from 'components/cart/modal';
-import DarkModeToggle from 'components/dark-mode-toggle';
 import LogoSquare from 'components/logo-square';
 import { getMenu } from 'lib/shopify';
 import { Menu } from 'lib/shopify/types';
@@ -80,20 +79,12 @@ export async function Navbar() {
           </Suspense>
         </div>
         <div className="flex justify-end md:w-1/3 gap-2 md:gap-4 items-center">
-          <DarkModeToggle />
           <Link
             href="/register"
             style={{ color: 'rgb(175, 62, 143)' }}
             className="font-semibold hover:opacity-80 transition text-xs md:text-sm"
           >
             Реєстрація
-          </Link>
-          <Link
-            href="/admin/orders"
-            style={{ color: 'rgb(175, 62, 143)' }}
-            className="font-semibold hover:opacity-80 transition text-xs md:text-sm"
-          >
-            Замовлення
           </Link>
           <Link
             href="/wishlist"
