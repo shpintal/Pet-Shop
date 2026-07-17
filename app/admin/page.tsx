@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import * as fs from 'fs';
 import * as path from 'path';
+import AdminLogoutButton from './logout-button';
 
 interface Order {
   id: string;
@@ -74,9 +75,12 @@ export default async function AdminPage() {
     <div className="min-h-screen bg-white" style={{ fontFamily: 'Lato, sans-serif' }}>
       {/* Header */}
       <section style={{ backgroundColor: 'rgb(175, 62, 143)' }} className="text-white py-16">
-        <div className="max-w-7xl mx-auto px-4">
-          <h1 style={{ fontFamily: 'Poppins, sans-serif', fontSize: '48px', fontWeight: 700 }} className="mb-4">🔧 Адміністрація</h1>
-          <p style={{ fontSize: '18px', color: 'rgba(255,255,255,0.9)' }}>Управління Pet Shop магазином</p>
+        <div className="max-w-7xl mx-auto px-4 flex items-start justify-between">
+          <div>
+            <h1 style={{ fontFamily: 'Poppins, sans-serif', fontSize: '48px', fontWeight: 700 }} className="mb-4">🔧 Адміністрація</h1>
+            <p style={{ fontSize: '18px', color: 'rgba(255,255,255,0.9)' }}>Управління Pet Shop магазином</p>
+          </div>
+          <AdminLogoutButton />
         </div>
       </section>
 
