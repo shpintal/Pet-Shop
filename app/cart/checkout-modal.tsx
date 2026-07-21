@@ -5,7 +5,7 @@ import { useState } from 'react';
 interface CheckoutModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSubmit: (formData: OrderData) => Promise<void>;
+  onSubmit: (orderId: string) => Promise<void>;
   total: number;
 }
 
@@ -86,7 +86,7 @@ export default function CheckoutModal({ isOpen, onClose, onSubmit, total }: Chec
         return;
       }
 
-      await onSubmit(formData);
+      await onSubmit(data.orderId);
 
       // Очистити форму
       setFormData({

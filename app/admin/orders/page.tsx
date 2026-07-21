@@ -1,6 +1,4 @@
-import { cookies } from 'next/headers';
-import * as fs from 'fs';
-import * as path from 'path';
+import { prisma } from 'lib/prisma';
 import OrdersList from './orders-list';
 
 interface Order {
@@ -18,21 +16,30 @@ interface Order {
 }
 
 async function getOrders(): Promise<Order[]> {
-  try {
-    const ordersDir = path.join(process.cwd(), 'data');
-    const ordersFile = path.join(ordersDir, 'orders.json');
+  const orders = await prisma.order.findMany({
+    include: { orderItems: { include: { product: true } } },
+    orderBy: { createdAt: 'desc' }
+  });
 
-    if (!fs.existsSync(ordersFile)) {
-      return [];
-    }
-
-    const data = fs.readFileSync(ordersFile, 'utf-8');
-    const orders = JSON.parse(data || '[]') as Order[];
-    return orders.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
-  } catch (error) {
-    console.error('Error reading orders:', error);
-    return [];
-  }
+  return orders.map((order) => ({
+    id: String(order.id),
+    firstName: order.firstName,
+    lastName: order.lastName,
+    email: order.email,
+    phone: order.phone,
+    address: order.address,
+    city: order.city,
+    postalCode: order.postalCode,
+    total: order.total,
+    createdAt: order.createdAt.toISOString(),
+    items: order.orderItems.map((item) => ({
+      id: item.productId,
+      name: item.product.name,
+      price: item.price,
+      quantity: item.quantity,
+      emoji: item.product.emoji
+    }))
+  }));
 }
 
 export const metadata = {

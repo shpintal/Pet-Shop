@@ -1,4 +1,4 @@
-import CartModal from 'components/cart/modal';
+import CartBadge from 'components/cart/cart-badge';
 import LogoSquare from 'components/logo-square';
 import { getMenu } from 'lib/shopify';
 import { Menu } from 'lib/shopify/types';
@@ -80,6 +80,13 @@ export async function Navbar() {
         </div>
         <div className="flex justify-end md:w-1/3 gap-2 md:gap-4 items-center">
           <Link
+            href="/login"
+            style={{ color: 'rgb(175, 62, 143)' }}
+            className="font-semibold hover:opacity-80 transition text-xs md:text-sm"
+          >
+            Вхід
+          </Link>
+          <Link
             href="/register"
             style={{ color: 'rgb(175, 62, 143)' }}
             className="font-semibold hover:opacity-80 transition text-xs md:text-sm"
@@ -93,14 +100,9 @@ export async function Navbar() {
           >
             Обране
           </Link>
-          <Link
-            href="/cart"
-            style={{ color: 'rgb(175, 62, 143)' }}
-            className="font-semibold hover:opacity-80 transition text-xs md:text-sm"
-          >
-            Кошик
-          </Link>
-          <CartModal />
+          <Suspense fallback={null}>
+            <CartBadge />
+          </Suspense>
         </div>
       </div>
     </nav>

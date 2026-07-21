@@ -1,3 +1,5 @@
+import { cookies } from 'next/headers';
+
 export const USER_COOKIE_NAME = 'user_session';
 
 const SESSION_TTL_MS = 1000 * 60 * 60 * 24 * 7; // 7 days
@@ -50,4 +52,13 @@ export async function verifyUserSession(
   if (expectedSignature !== signature) return null;
 
   return { userId, role };
+}
+
+export async function getCurrentUser(): Promise<{ userId: number; role: Role } | null> {
+  const secret = process.env.ADMIN_SESSION_SECRET;
+  if (!secret) return null;
+
+  const jar = await cookies();
+  const token = jar.get(USER_COOKIE_NAME)?.value;
+  return verifyUserSession(token, secret);
 }

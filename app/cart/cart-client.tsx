@@ -1,8 +1,8 @@
 'use client';
 
 import Link from 'next/link';
-import { useEffect, useState } from 'react';
-import CheckoutModal, { OrderData } from './checkout-modal';
+import { useState } from 'react';
+import CheckoutModal from './checkout-modal';
 import PaymentModal, { PaymentData } from './payment-modal';
 
 interface CartItem {
@@ -15,32 +15,10 @@ interface CartItem {
 
 export default function CartClient({ initialCart }: { initialCart: CartItem[] }) {
   const [cartItems, setCartItems] = useState<CartItem[]>(initialCart);
-  const [isLoaded, setIsLoaded] = useState(false);
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
   const [isPaymentOpen, setIsPaymentOpen] = useState(false);
   const [orderSuccess, setOrderSuccess] = useState(false);
   const [orderId, setOrderId] = useState<string>('');
-
-  useEffect(() => {
-    // Завантажити кошик з localStorage
-    const savedCart = localStorage.getItem('cart');
-    if (savedCart) {
-      try {
-        const parsedCart = JSON.parse(savedCart);
-        setCartItems(parsedCart);
-      } catch (error) {
-        console.error('Error parsing cart from localStorage:', error);
-      }
-    }
-    setIsLoaded(true);
-  }, []);
-
-  // Зберегти кошик в localStorage кожен раз коли він змінюється
-  useEffect(() => {
-    if (isLoaded) {
-      localStorage.setItem('cart', JSON.stringify(cartItems));
-    }
-  }, [cartItems, isLoaded]);
 
   const updateQuantity = (id: number, newQuantity: number) => {
     if (newQuantity < 1) {
@@ -50,10 +28,16 @@ export default function CartClient({ initialCart }: { initialCart: CartItem[] })
     setCartItems(cartItems.map(item =>
       item.id === id ? { ...item, quantity: newQuantity } : item
     ));
+    fetch(`/api/cart/${id}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ quantity: newQuantity })
+    }).catch(() => {});
   };
 
   const removeItem = (id: number) => {
     setCartItems(cartItems.filter(item => item.id !== id));
+    fetch(`/api/cart/${id}`, { method: 'DELETE' }).catch(() => {});
   };
 
   const handlePaymentSubmit = async (paymentData: PaymentData) => {
@@ -69,7 +53,6 @@ export default function CartClient({ initialCart }: { initialCart: CartItem[] })
       setIsPaymentOpen(false);
       setOrderSuccess(true);
       setCartItems([]);
-      localStorage.setItem('cart', JSON.stringify([]));
 
       setTimeout(() => {
         setOrderSuccess(false);
@@ -79,37 +62,10 @@ export default function CartClient({ initialCart }: { initialCart: CartItem[] })
     }
   };
 
-  const handleCheckoutSubmit = async (formData: OrderData) => {
-    console.log('Замовлення оформлено:', formData);
-
-    const subtotal = cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
-    const shipping = subtotal > 500 ? 0 : 100;
-    const tax = Math.round(subtotal * 0.1);
-    const total = subtotal + shipping + tax;
-
-    try {
-      const response = await fetch('/api/orders', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          ...formData,
-          items: cartItems,
-          total: total,
-        }),
-      });
-
-      const data = await response.json();
-
-      if (response.ok) {
-        setOrderId(data.orderId);
-        setIsCheckoutOpen(false);
-        setIsPaymentOpen(true);
-      }
-    } catch (error) {
-      console.error('Error submitting order:', error);
-    }
+  const handleCheckoutSubmit = async (newOrderId: string) => {
+    setOrderId(newOrderId);
+    setIsCheckoutOpen(false);
+    setIsPaymentOpen(true);
   };
 
   const subtotal = cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0);

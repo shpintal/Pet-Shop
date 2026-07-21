@@ -1,5 +1,6 @@
 import Footer from 'components/layout/footer';
 import { prisma } from 'lib/prisma';
+import { getCurrentUser } from 'lib/user-auth';
 import ProductsClient from './products-client';
 
 export const metadata = {
@@ -8,7 +9,10 @@ export const metadata = {
 };
 
 export default async function ProductsPage() {
-  const products = await prisma.product.findMany({ orderBy: { id: 'asc' } });
+  const [products, user] = await Promise.all([
+    prisma.product.findMany({ orderBy: { id: 'asc' } }),
+    getCurrentUser()
+  ]);
 
   return (
     <div className="min-h-screen bg-white" style={{ fontFamily: 'Lato, sans-serif' }}>
@@ -21,7 +25,7 @@ export default async function ProductsPage() {
       </section>
 
       {/* Client Component with interactive functionality */}
-      <ProductsClient products={products} />
+      <ProductsClient products={products} isLoggedIn={!!user} />
 
       <Footer />
     </div>

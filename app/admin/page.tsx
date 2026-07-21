@@ -1,32 +1,19 @@
 import Link from 'next/link';
-import * as fs from 'fs';
-import * as path from 'path';
 import { prisma } from 'lib/prisma';
 import AdminLogoutButton from './logout-button';
 
-interface Order {
-  id: string;
-  total?: number;
-  createdAt: string;
-}
-
 async function getOrderStats() {
-  try {
-    const ordersFile = path.join(process.cwd(), 'data', 'orders.json');
-    if (!fs.existsSync(ordersFile)) return { total: 0, revenue: 0, orders: 0 };
+  const result = await prisma.order.aggregate({
+    _sum: { total: true },
+    _count: true
+  });
 
-    const data = fs.readFileSync(ordersFile, 'utf-8');
-    const orders = JSON.parse(data || '[]') as Order[];
-
-    const revenue = orders.reduce((sum, order) => sum + (order.total || 0), 0);
-    return {
-      total: revenue,
-      revenue: revenue,
-      orders: orders.length
-    };
-  } catch (error) {
-    return { total: 0, revenue: 0, orders: 0 };
-  }
+  const revenue = result._sum.total ?? 0;
+  return {
+    total: revenue,
+    revenue,
+    orders: result._count
+  };
 }
 
 export const metadata = {

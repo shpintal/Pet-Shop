@@ -16,9 +16,10 @@ interface Product {
 
 interface ProductsClientProps {
   products: Product[];
+  isLoggedIn: boolean;
 }
 
-export default function ProductsClient({ products }: ProductsClientProps) {
+export default function ProductsClient({ products, isLoggedIn }: ProductsClientProps) {
   const router = useRouter();
   const [selectedProduct, setSelectedProduct] = useState<number | null>(null);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
@@ -59,30 +60,32 @@ export default function ProductsClient({ products }: ProductsClientProps) {
     return filtered;
   }, [products, selectedCategory, sortBy]);
 
-  const handleAddToCart = (product: Product) => {
-    setSelectedProduct(product.id);
-
-    const cart = JSON.parse(localStorage.getItem('cart') || '[]');
-    const existingItem = cart.find((item: any) => item.id === product.id);
-    const price = typeof product.price === 'string' ? parseInt(product.price) : product.price;
-
-    if (existingItem) {
-      existingItem.quantity += 1;
-    } else {
-      cart.push({
-        id: product.id,
-        name: product.name,
-        price: price,
-        quantity: 1,
-        emoji: product.emoji
-      });
+  const handleAddToCart = async (product: Product) => {
+    if (!isLoggedIn) {
+      router.push('/login?from=/products');
+      return;
     }
 
-    localStorage.setItem('cart', JSON.stringify(cart));
+    setSelectedProduct(product.id);
 
-    setTimeout(() => {
-      router.push('/cart');
-    }, 300);
+    try {
+      const res = await fetch('/api/cart', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ productId: product.id, quantity: 1 })
+      });
+
+      if (!res.ok) {
+        setSelectedProduct(null);
+        return;
+      }
+
+      setTimeout(() => {
+        router.push('/cart');
+      }, 300);
+    } catch {
+      setSelectedProduct(null);
+    }
   };
 
   return (

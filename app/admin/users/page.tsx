@@ -1,32 +1,6 @@
-import * as fs from 'fs';
-import * as path from 'path';
 import Link from 'next/link';
 import { prisma } from 'lib/prisma';
 import UsersTable from './users-table';
-
-interface OrderRecord {
-  email: string;
-  total?: number;
-}
-
-function getOrderCountsByEmail(): Record<string, number> {
-  try {
-    const ordersFile = path.join(process.cwd(), 'data', 'orders.json');
-    if (!fs.existsSync(ordersFile)) return {};
-
-    const data = fs.readFileSync(ordersFile, 'utf-8');
-    const orders = JSON.parse(data || '[]') as OrderRecord[];
-
-    return orders.reduce<Record<string, number>>((counts, order) => {
-      const email = order.email?.toLowerCase();
-      if (!email) return counts;
-      counts[email] = (counts[email] || 0) + 1;
-      return counts;
-    }, {});
-  } catch {
-    return {};
-  }
-}
 
 export const metadata = {
   title: 'Користувачі | Pet Shop Admin',
@@ -34,8 +8,10 @@ export const metadata = {
 };
 
 export default async function UsersPage() {
-  const users = await prisma.user.findMany({ orderBy: { createdAt: 'desc' } });
-  const orderCounts = getOrderCountsByEmail();
+  const users = await prisma.user.findMany({
+    orderBy: { createdAt: 'desc' },
+    include: { _count: { select: { orders: true } } }
+  });
 
   const usersWithOrders = users.map((user) => ({
     id: user.id,
@@ -46,7 +22,7 @@ export default async function UsersPage() {
     role: user.role,
     isBlocked: user.isBlocked,
     createdAt: user.createdAt.toISOString(),
-    orders: orderCounts[user.email.toLowerCase()] || 0
+    orders: user._count.orders
   }));
 
   return (
