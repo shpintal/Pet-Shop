@@ -1,4 +1,3 @@
-import CartBadge from 'components/cart/cart-badge';
 import LogoSquare from 'components/logo-square';
 import { getMenu } from 'lib/shopify';
 import { Menu } from 'lib/shopify/types';
@@ -107,9 +106,6 @@ export async function Navbar() {
           >
             Кошик
           </Link>
-          <Suspense fallback={null}>
-            <CartBadge />
-          </Suspense>
         </div>
       </div>
     </nav>
