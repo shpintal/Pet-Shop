@@ -100,6 +100,13 @@ export async function Navbar() {
           >
             Обране
           </Link>
+          <Link
+            href="/cart"
+            style={{ color: 'rgb(175, 62, 143)' }}
+            className="font-semibold hover:opacity-80 transition text-xs md:text-sm"
+          >
+            Кошик
+          </Link>
           <Suspense fallback={null}>
             <CartBadge />
           </Suspense>
