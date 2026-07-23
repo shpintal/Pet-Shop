@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState, useMemo } from 'react';
+import WishlistButton from 'components/wishlist-button';
 
 interface Product {
   id: number;
@@ -234,6 +235,10 @@ export default function ProductsClient({ products, isLoggedIn }: ProductsClientP
                     </span>
 
                     <p style={{ color: 'rgb(119, 119, 119)' }} className="mb-4 text-sm">{product.description}</p>
+
+                    <div className="mb-3">
+                      <WishlistButton productId={product.id} productName={product.name} />
+                    </div>
 
                     <div className="flex items-center justify-between">
                       <span style={{ color: 'rgb(175, 62, 143)' }} className="text-2xl font-bold">
