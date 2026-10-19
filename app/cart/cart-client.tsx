@@ -13,6 +13,14 @@ interface CartItem {
   emoji: string;
 }
 
+function pluralizeItems(n: number) {
+  const mod10 = n % 10;
+  const mod100 = n % 100;
+  if (mod10 === 1 && mod100 !== 11) return 'товар';
+  if (mod10 >= 2 && mod10 <= 4 && (mod100 < 12 || mod100 > 14)) return 'товари';
+  return 'товарів';
+}
+
 export default function CartClient({ initialCart }: { initialCart: CartItem[] }) {
   const [cartItems, setCartItems] = useState<CartItem[]>(initialCart);
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
@@ -75,6 +83,16 @@ export default function CartClient({ initialCart }: { initialCart: CartItem[] })
 
   return (
     <>
+      {/* Hero Section */}
+      <section style={{ backgroundColor: 'rgb(175, 62, 143)' }} className="relative text-white py-12">
+        <div className="max-w-7xl mx-auto px-4">
+          <h1 style={{ fontFamily: 'Poppins, sans-serif', fontSize: '56px', fontWeight: 700 }} className="mb-2">Кошик</h1>
+          <p style={{ fontSize: '20px', color: 'rgba(255,255,255,0.9)' }}>
+            {cartItems.length} {pluralizeItems(cartItems.length)} в кошику
+          </p>
+        </div>
+      </section>
+
       {/* Success Message */}
       {orderSuccess && (
         <div className="fixed top-4 right-4 bg-green-500 text-white px-6 py-4 rounded-lg shadow-lg flex items-center gap-3 z-40 animate-pulse">

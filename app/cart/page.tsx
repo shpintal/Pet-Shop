@@ -53,15 +53,7 @@ export default async function CartPage() {
 
   return (
     <div className="min-h-screen bg-white" style={{ fontFamily: 'Lato, sans-serif' }}>
-      {/* Hero Section */}
-      <section style={{ backgroundColor: 'rgb(175, 62, 143)' }} className="relative text-white py-12">
-        <div className="max-w-7xl mx-auto px-4">
-          <h1 style={{ fontFamily: 'Poppins, sans-serif', fontSize: '56px', fontWeight: 700 }} className="mb-2">Кошик</h1>
-          <p style={{ fontSize: '20px', color: 'rgba(255,255,255,0.9)' }}>{initialCart.length} товарів в кошику</p>
-        </div>
-      </section>
-
-      {/* Cart Client Component */}
+      {/* Cart Client Component (includes hero with live item count) */}
       <CartClient initialCart={initialCart} />
 
       {/* Benefits Section */}
